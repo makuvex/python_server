@@ -1,14 +1,17 @@
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 FROM python:3.8
+FROM mysql
 
 RUN apt-get update -y
 RUN apt-get install nano
-RUN apt-get install -y locales locales-all
+#RUN apt-get install -y mysql-server libmysqlclient-dev
 
-ENV LC_ALL ko_KR.UTF-8
-ENV LANG ko_KR.UTF-8
-ENV LANG ko_KR.EUC-KR
-ENV LANGUAGE ko_KR:ko:en_GB:en
+#RUN apt-get install -y locales locales-all
+
+#ENV LC_ALL ko_KR.UTF-8
+#ENV LANG ko_KR.UTF-8
+#ENV LANG ko_KR.EUC-KR
+#ENV LANGUAGE ko_KR:ko:en_GB:en
 
 COPY . /app
 WORKDIR /app

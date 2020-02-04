@@ -16,7 +16,7 @@ class mySqlService:
                               user=preference.user, 
                               password=preference.passwd, 
                               db=preference.db_name, 
-                              charset='utf8')
+                              charset='utf8mb4')
         self.cur = self.con.cursor()
 
     def __del__(self):
