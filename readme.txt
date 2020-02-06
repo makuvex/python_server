@@ -7,3 +7,5 @@
 4. git, docker 생성 및 적용
 
 5. FCM
+
+6. logger, scheduler
