@@ -9,3 +9,7 @@
 5. FCM
 
 6. logger, scheduler
+
+7. word cloud
+
+8. google news crawling
