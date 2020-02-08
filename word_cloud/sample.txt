@@ -1,0 +1,296 @@
+
+임월드의 성장 일기
+내 방 (23)
+ LA 여행 (6)
+ 생각의 방 (16)
+책방 (21)
+데이터 방 (10)
+행복한 방 (0)
+홈
+태그
+방명록
+72 / 41 / 8,403
+press enter to search…
+워드 클라우드 만들기 (주피터노트북 _ 파이썬)2019. 7. 30. 00:01
+konlpy, 워드 클라우드, 파이썬
+ 
+
+ 
+
+
+워드 클라우드를 만들었다. 
+
+2010- 2018년까지 썼던 나의 일기를 데이터로 
+
+워드 클라우드를 만들어봤다. 
+
+물론, 일기는 종이에 썼고 스프레드 시트에 다 옮겨 적었다.
+
+꽤 오래 걸렸다... 
+
+
+2010 이전 다이어리는 포함하지 않았다. 
+ 
+
+워드 클라우드를 두 종류를 나눠서 만들었다. 
+
+1. 감정 별로 나누어 만든 워드클라우드 (tagxedo 사이트 이용)
+
+2. 연도 별 긍정vs부정으로 나누어 만든 워드클라우드 (파이썬 이용) 
+
+ 
+
+내가 오늘 정리한 것은 파이썬로 하는 워드 클라우드다. 2번!
+
+ 
+
+연도별, 긍정vs부정으로 나누어 정리했다. 
+
+
+긍정과 부정으로 나누어 정리했다. 
+ 
+
+워드 클라우드 시작하기 (konlpy가 설치되었다는 전제하에) 
+
+ 
+
+1) 패키지 불러오기
+
+from konlpy.tag import Twitter
+
+from collections import Counter
+ 
+
+Twitter는 konlpy의 여러 패키지 중 하나로 형태소를 분석해준다.
+
+Counter 는 단어를 카운팅 해주는 패키지.
+
+ 
+
+2) 클라우드로 만들 텍스트 파일 불러오기 
+
+file = open("C:/Users/eunji_see/data/다이어리/감정별 텍스트/가치관.txt", 'r')
+
+lists = file.readlines()
+
+file.close()
+
+lists
+
+'r' : 파일을 수정('w')은 안하고 읽기만 하겠다.
+
+readlines로 불러오면 위와 같이 리스트 형태로 글이 출력된다. 
+
+ 
+
+3) 형태소 나누기
+
+twitter = Twitter()
+morphs = []
+ 
+for sentence in lists:
+    morphs.append(twitter.pos(sentence))
+    
+print(morphs)
+
+ 
+
+코드 설명 
+
+morphs = [] morphs라는 빈 리스트를 만들고 그 리스트에 추가(append)한다.
+
+무엇을?
+
+lists에 있는 글(sentence)의 형태소를 분석한(twitter) 결과를.  
+
+ 
+
+결과는 위와 같이 출력된다. 
+
+조사, 명사, 부사 등등 단어와 형태로 나누어 리스트가 형성되었다. 
+
+여기서 내가 워드 클라우드에 넣을 것은 명상, 형용사 부사까지다. 
+
+ 
+
+4) 명사, 형용사, 부사만 골라내기
+
+noun_adj_adv_list=[]
+ 
+for sentence in morphs :
+    for word, tag in sentence :
+        if tag in ['Noun'] and ("것" not in word) and ("내" not in word)and ("나" not in word)and ("수"not in word) and("게"not in word)and("말"not in word):
+            noun_adj_adv_list.append(word)
+            
+print(noun_adj_adv_list)
+
+*sentence는 for 함수 안에서만 쓰이는 변수라 3)의 sentence와는 상관없다. 
+
+ 
+
+3)에서 morph라는 리스트를 만들었고 이 리스트 안에는 쉼표로 구분된 두 가지 데이터가 담겨있다. 
+
+ex) ('엄마','Noun')
+
+word와 tag라고 변수를 붙여주면 word는 앞의 단어(엄마), tag는 뒤의 단어(Noun)와 연결된다. 
+
+코드설명
+
+만약(if) tag 안에 명사, 형용사, 부사['Noun','Adjective','Adverb']가 있으면
+
+내가 만든 빈 리스트(noun_adj_adv_list)에 앞의 단어(word)를 추가(append)한다.  
+
+워드 클라우드 결과에 도움이 되지 않는 '것', '나', '내' 는 제외한다.
+
+결과는 내가 만든 조건에 충족하는 word만 출력된 리스트다.
+
+ 
+
+5) 빈도수대로 정렬하기 
+
+count = Counter(noun_adj_adv_list)
+words = dict(count.most_common())
+words
+{'최선': 11,
+ '사람': 11,
+ '생각': 7,
+ '실천': 6,
+ '삶': 6,
+ '일': 6,
+ '공부': 5,
+ '살기': 5,
+ 
+
+코드설명
+
+Counter는 위에서 말했듯이 카운팅 해주는 패키지.  이를 내가 만든 최종 리스트(noun_adj_adv_list)에 적용시킨다. 
+
+리스트에서 빈도수대로 단어를 정렬(most_common)하고 이를 딕셔너리(dict) 형태로 출력한다.
+
+단어와 빈도수가 함께 나오는 딕셔너리가 만들어졌다. 
+
+ 
+
+6) 워드 클라우드 만들기 - 디스플레이 설정 
+
+from wordcloud import WordCloud 
+
+import matplotlib.pyplot as plt
+
+import nltk
+from nltk.corpus import stopwords
+%matplotlib inline
+
+import matplotlib
+from IPython.display import set_matplotlib_formats
+matplotlib.rc('font',family = 'Malgun Gothic')
+
+set_matplotlib_formats('retina')
+
+matplotlib.rc('axes',unicode_minus = False)
+* wordcloud 패키지도 설치해주어야 한다. (아나콘다 프롬프트에 pip install wordcloud(아니면 WordCloud) 치면 됨) 
+
+nltk에 대한 설명은 여기서  (형태소 분석 패키지입니다.)
+
+stopwords를 써먹으려고 불렀는데 나는 적용에 실패했다.. 영어가 아니라서 그런듯..
+
+코드설명
+
+%matplotlib inline 아래 모든 코드는 그래프의 디스플레이에 설정에 관한 것이다.
+
+font는 Malgun Gothic , 그래프가 한글일 경우 선명하게 나오지 않아 선명하게 하기('retina')
+
+제일 아랫줄은 그래프에 음수의 수치를 보여줄 때 오류가 나는 것을 방지하는 코드라 굳이 안 적어도 상관 없다. 
+
+ 
+
+7) 워드 클라우드 만들기 - 워드 클라우드 최종 코드 
+
+wordcloud = WordCloud(font_path = 'C:/Windows/Fonts/malgun.ttf', background_color='white',colormap = "Accent_r",
+                      width=1500, height=1000).generate_from_frequencies(words)
+
+plt.imshow(wordcloud)
+plt.axis('off')
+plt.show()
+font_path는 한글 폰트가 있는 경로를 적어준다. 
+
+background_color는 배경색. 
+
+마지막 괄호에 딕셔너리 형태로 만들었던 words넣어준다. 
+
+ 
+
+8) 최종 결과 
+
+2018년 부정적 상태에 쓰인 단어들
+
+
+이렇게 나왔다.. 
+
+마음과 왜라는 단어가 제일 많이 나왔다.
+
+보통 답답할 때, 혹은 답을 찾으려고 할 때 '왜' 라는 질문을 던지는 경향이 있는 것 같다.
+
+그 때문에 '왜'라는 단어가 나온듯하다. 
+
+고민을 하거나 답을 찾으려고 하지만 도저히 답을 찾을 수 없을 때 대개 걱정과 불안으로 이어지기 때문에 
+
+부정적인 감정에 포함되지 않았나 싶다. 
+
+길, 선택, 결정, 이런 단어도 보이고.. 진로상 많이 고민했던 시기인 것 같다. 
+
+실제로 그랬고 2019년에는 퇴사도 했으니..!
+
+ 
+
+요건 걍.. 하나만 올리면 심심하니까
+
+2018년 긍정적인 감정일 때 쓰인 단어들 
+
+
+하핫. 남자친구가 제일 많이 나왔다. 
+
+제게 과분할 정도로 좋은 사람을 만나서 제가 일기에도 많이 썼나 보다. 
+
+미래는 아마 저 혼자만의 미래라기 보다는 함께 하는 미래를 말하는 것 같다.
+
+재밌는 일도 많이 했던 것 같고.. 처음 하는 일도 있었고 
+
+처음하는 건 항상 설레고 기대되고 그렇지. 
+
+ 
+
+ 
+
+이상!
+
+제 일기로 워드클라우드를 만들어봤다. 
+
+2010-2018 까지 쭉 한번 워드 클라우드로 만들어보고 (텍스트 파일명만 바꾸면 되니!) 
+
+데이터로 저를 돌아보는 시간을 한번 가져야겠다. 
+
+어떤 결과가 나올지 기대되는군.
+
+
+좋아요공감
+공유하기글 요소구독하기
+저작자표시비영리변경금지
+'데이터 방' 카테고리의 다른 글
+매일 파이썬 _ 계산기 만들기  (0)	2020.01.17
+자기 분석 프로젝트  (0)	2019.09.18
+워드 클라우드 만들기 (주피터노트북 _ 파이썬)  (0)	2019.07.30
+데이터 시각화 종류 (기초) _ matplotlib(seaborn)  (0)	2019.07.25
+체중 변화 분석 ( +데이터 시각화)  (0)	2019.07.09
+데이터 분석 (체중관리 3차)  (0)	2019.07.07
+NAME
+PASSWORD
+HOMEPAGE
+http://
+SECRET
+PREV 1···456789101112···54 NEXT
++ Recent posts
+post image매일 파이썬 _ 계산기 만들기post image신뢰_ 인간관계의 모든 것post image자기 분석 프로젝트post image<자기다움>을 읽고
+Powered by Tistory, Designed by wallelRss Feed and Twitter, Facebook, Youtube, Google+관리메뉴열기임월드의 성장 일기 구독하기
+
+출처: https://imworld.tistory.com/entry/워드-클라우드-만들기-주피터노트북-파이썬 [임월드의 성장 일기]
